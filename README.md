@@ -164,7 +164,7 @@ Prerequisites
  – AI Content Detection API
  – Gemini AI
 1. Clone the Repository
-git clone https://github.com/yourusername/ContentGuardAI.git
+git clone : https://github.com/usabir75/ContentGuardAI
  cd ContentGuardAI
 2. Configure n8n Webhook URL
 https://n8n.srv1038989.hstgr.cloud/webhook/home_work_grader
