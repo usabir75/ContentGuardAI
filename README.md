@@ -1,6 +1,8 @@
 ContentGuard AI
 AI-Powered Academic and Content Integrity Scanner
 “Protecting originality with intelligent automation.”
+**Live Demo Website:**  
+https://contentguardai.lovable.app/
 ―
 Overview
 ContentGuard AI is a full-stack automated evaluation system designed to analyze written
