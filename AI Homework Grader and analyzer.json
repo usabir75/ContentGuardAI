@@ -1,0 +1,431 @@
+{
+  "name": "AI Homework Grader and analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI Assignment Evaluator.\n\nYou will receive a writing assignment and must evaluate it strictly based on content quality. You are NOT responsible for plagiarism or AI content detection, these will be handled separately.\n\nGrading Criteria (100 Marks Total)\n\nYou must give both an overall score and a detailed rubric breakdown:\n\nContent relevance and understanding: 30 marks\n\nStructure, flow and clarity: 20 marks\n\nGrammar, spelling and punctuation: 20 marks\n\nCritical thinking, originality and depth: 20 marks\n\nFormatting and readability: 10 marks\n\nThe sum of the rubric scores should match the overall score as closely as possible.\nNote:\nDo NOT output percentages.  \nDo NOT scale values to 100.  \nReturn raw scores only within their allowed ranges.\n\nRemarks, Strengths and Mistakes Formatting\n\nFeedback paragraph\nProvide a short, professional, and encouraging paragraph summarizing the assignment. This is the first paragraph of the feedback field.\n\nMistakes list inside feedback\nAfter the main feedback paragraph, include a section titled:\n\nMistakes in the Assignment:\n\nThere must be a blank line between the main paragraph and this heading.\n\nEach mistake must be on a separate line, numbered.\n\nInclude line breaks in the JSON string using \\n.\n\nFormat each mistake exactly as:\n\n<number>. Paragraph <paragraph_number>: \"...2–3 words BEFORE [mistake] 2–3 words AFTER...\" \\n\n- Correction: <correct version> \\n\n\nDo NOT merge all mistakes in one line. Each numbered mistake must appear on its own line in the JSON string.\n\nIf there are no obvious mistakes, write: No significant linguistic errors found. under the heading.\n\nStrengths\nIn the strengths field, provide 3 bullet points highlighting what the student did well. Focus on content quality, structure, argument, and style. Represent bullet points in a single string with line breaks using \\n, for example:\n\n- Clear understanding of the topic.\\n- Logical flow between paragraphs.\\n- Good use of relevant examples.\n\nImprovement Suggestions\nIn the improvement_suggestions field, provide 3 to 6 clear, actionable bullet points on how the student can improve their writing, structure, vocabulary, clarity, and academic tone. Again, use \\n to separate bullets.\n\nOutput Format (STRICT JSON ONLY)\n\nReturn output ONLY in this JSON format and nothing else:\n\n{\n\"score\": <number between 0 and 100>,\n\"content_score\": <number between 0 and 30>,\n\"structure_score\": <number between 0 and 20>,\n\"grammar_score\": <number between 0 and 20>,\n\"critical_thinking_score\": <number between 0 and 20>,\n\"formatting_score\": <number between 0 and 10>,\n\"feedback\": \"<Short paragraph summarizing quality, followed by the mistakes section formatted as described, using \\n for line breaks>\",\n\"strengths\": \"<3 bullet points describing what the student did well, separated by \\n>\",\n\"improvement_suggestions\": \"<3–6 clear, actionable bullet points for improvement, separated by \\n>\"\n}\n\nIf the text is very short, low quality, or unclear, still provide a score and feedback.\n\nIf the text is empty or unreadable, respond with exactly:\n\n{\n\"score\": 0,\n\"content_score\": 0,\n\"structure_score\": 0,\n\"grammar_score\": 0,\n\"critical_thinking_score\": 0,\n\"formatting_score\": 0,\n\"feedback\": \"The provided text appears empty or unreadable.\",\n\"strengths\": \"No strengths can be evaluated because the text is empty or unreadable.\",\n\"improvement_suggestions\": \"Please upload a clear assignment to be evaluated.\"\n}\n\nRules\n\nNEVER include plagiarism or AI detection results.\n\nNEVER request additional instructions.\n\nALWAYS evaluate based only on the provided text.\n\nKeep JSON valid at all times."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        496
+      ],
+      "id": "cae52114-cfed-49d7-a7c4-40b27565d464",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"score\": 0,\n  \"content_score\": 0,\n  \"structure_score\": 0,\n  \"grammar_score\": 0,\n  \"critical_thinking_score\": 0,\n  \"formatting_score\": 0,\n  \"feedback\": \"\",\n  \"strengths\": \"\",\n  \"improvement_suggestions\": \"\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        608
+      ],
+      "id": "063b671e-16a9-4d49-94be-8a8d5e5bc601",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get extracted text from previous node\nconst text = $json[\"text\"] || \"\";\n\n// Word count\nconst words = text.trim().length > 0\n  ? text.trim().split(/\\s+/).length\n  : 0;\n\n// Sentence count (simple but effective)\nconst sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;\n\n// Estimated reading time (200 words/min)\nconst reading_time_minutes = words > 0\n  ? Math.ceil(words / 200)\n  : 0;\n\nreturn {\n  text,\n  word_count: words,\n  sentence_count: sentences,\n  reading_time_minutes\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        368
+      ],
+      "id": "7e8bdebf-4887-499e-91f5-cb6d6efc0ddd",
+      "name": "Document Stats"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai-content-detector-ai-gpt.p.rapidapi.com/api/detectText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "ai-content-detector-ai-gpt.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "03e821d51cmsh1316dbf34d03467p1d88e0jsnc13fe1274bc9"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -384,
+        208
+      ],
+      "id": "febbbfea-056b-43e0-9cb4-c94bcc3d3dee",
+      "name": "AI Content Detection"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plagiarism-source-checker-with-links.p.rapidapi.com/data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "plagiarism-source-checker-with-links.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "78ec142497msh302f45e73e90d92p1f23ccjsn47bd439c20be"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -384,
+        48
+      ],
+      "id": "79daeb9a-0a3c-4a0b-969e-73b6e83780a0",
+      "name": "Plagiarism Checker"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 4,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -16,
+        192
+      ],
+      "id": "35ea5cb6-f84d-41f6-a6cd-6ecca003bb8f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        608
+      ],
+      "id": "feb98d15-51a3-4548-aa18-142cf022b224",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AFPgG6eukarFMwSp",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Node-01: Upon pdf file upload at the front end, webhook will be called and workflow will be triggered.\n\nNode-02: It will convert the pdf file data into machine readable format",
+        "height": 320,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "c187f85c-db6c-4429-ac63-95de9d11528e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "home_work_grader",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        208
+      ],
+      "id": "67ab7c33-134e-4dc3-b1aa-563f5929ea16",
+      "name": "Trigger from FRONT-END",
+      "webhookId": "97b75f1f-a843-4d65-bcb1-c005f2ecdb5c"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        208
+      ],
+      "id": "b0a5da0d-c6ed-4f10-9110-519ed29f6703",
+      "name": "Extracting data from pdf file"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The merge node produces ONE combined item\nconst data = items[0].json || {};\n\nconst ai = data.output || {}; // AI Agent result block\n\nreturn [\n  {\n    json: {\n      // ---- AI Agent Scores ----\n      score: ai.score ?? 0,\n      content_score: ai.content_score ?? 0,\n      structure_score: ai.structure_score ?? 0,\n      grammar_score: ai.grammar_score ?? 0,\n      critical_thinking_score: ai.critical_thinking_score ?? 0,\n      formatting_score: ai.formatting_score ?? 0,\n\n      feedback: ai.feedback ?? \"\",\n      strengths: ai.strengths ?? \"\",\n      improvement_suggestions: ai.improvement_suggestions ?? \"\",\n\n      // ---- Plagiarism ----\n      plagiarism_status:\n        (data.duplicate_content_found_on_links?.length ?? 0) > 0\n          ? \"duplicate_content_found\"\n          : \"no_issues_found\",\n\n      plagiarism_links: data.duplicate_content_found_on_links ?? [],\n      plagiarism_count: data.duplicate_content_found_on_links?.length ?? 0,\n      plagiarism_percentage:\n        (data.duplicate_content_found_on_links?.length ?? 0) > 0 ? 100 : 0,\n\n      // ---- AI Content Detection ----\n      ai_content_percentage: data.fakePercentage ?? 0,\n      ai_human_percentage:\n        data.fakePercentage != null ? 100 - data.fakePercentage : 0,\n\n      ai_words: data.aiWords ?? 0,\n      total_words: data.textWords ?? 0,\n\n      // ---- Document Stats ----\n      word_count: data.word_count ?? null,\n      sentence_count: data.sentence_count ?? null,\n      reading_time: data.reading_time_minutes ?? null,\n\n      // ---- UI flag ----\n      status: true\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        224
+      ],
+      "id": "68c0c77e-c15c-440f-8589-76f24fc0f02d",
+      "name": "Refine all the results for the FRONT-END"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        224
+      ],
+      "id": "06e26b47-8716-472e-b1a9-afe076d2b16f",
+      "name": "Sending the results back to FRONT-END"
+    },
+    {
+      "parameters": {
+        "content": "Engine of the PROJECT",
+        "height": 704,
+        "width": 496,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "5578b302-2a68-406f-9593-2f7e044fc585",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 224,
+        "width": 224,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "d792bac0-6b0f-4e9b-bc22-dff045ee8eeb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 224,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "f1b1dac6-5c60-4589-9b64-f4d4f7eb22ef",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Stats": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "AI Content Detection": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Plagiarism Checker": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Refine all the results for the FRONT-END",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger from FRONT-END": {
+      "main": [
+        [
+          {
+            "node": "Extracting data from pdf file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extracting data from pdf file": {
+      "main": [
+        [
+          {
+            "node": "Document Stats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Plagiarism Checker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Content Detection",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refine all the results for the FRONT-END": {
+      "main": [
+        [
+          {
+            "node": "Sending the results back to FRONT-END",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3280aac4-6797-4ce7-a3b7-1b623d69d875",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "172f378e897ecb0ef47d7b62c528d5cdb07bfcec18fba954095327c346c3d4e9"
+  },
+  "id": "vEKxrHDFNIXWiCYI",
+  "tags": []
+}
