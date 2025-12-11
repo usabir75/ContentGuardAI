@@ -1,13 +1,18 @@
 ContentGuard AI
 AI-Powered Academic and Content Integrity Scanner
 “Protecting originality with intelligent automation.”
-
+―
 Overview
-ContentGuard AI is a full-stack automated evaluation system designed to analyze written assignments, essays, and blog content using advanced AI capabilities. It solves two major problems:
-• Teachers and academic institutions struggle to manually analyze assignments for AI writing, plagiarism, quality, and originality.
- • Website owners and bloggers hire writers but cannot easily detect AI-generated or plagiarized content, which risks SEO penalties and reputation damage.
-ContentGuard AI provides an end-to-end automated solution that evaluates documents within seconds, far faster and more accurately than manual review.
-
+ContentGuard AI is a full-stack automated evaluation system designed to analyze written
+ assignments, essays, and blog content using advanced AI capabilities. It solves two major
+ problems:
+• Teachers and academic institutions struggle to manually analyze assignments for AI writing,
+ plagiarism, quality, and originality.
+ • Website owners and bloggers hire writers but cannot easily detect AI-generated or plagiarized
+ content, which risks SEO penalties and reputation damage.
+ContentGuard AI provides an end-to-end automated solution that evaluates documents within
+ seconds, far faster and more accurately than manual review.
+―
 Key Features
 1. Academic Quality Evaluation (AI Scoring)
  Gemini AI evaluates the document across:
@@ -72,7 +77,7 @@ Result merging and formatting
 Response sent back to the website
 
 
-
+―
 Target Users
 For Teachers and Educational Institutions
  • Identify AI-written assignments
@@ -83,10 +88,12 @@ For Bloggers and Website Owners
  • Verify originality
  • Avoid SEO penalties
  • Ensure consistent content quality
-
+―
 System Architecture
-Front-End (Lovable) → n8n Webhook → PDF Extraction → AI Content Detection → Plagiarism Check → Document Stats → Gemini AI Evaluation → Merge Results → JSON Output Response
-
+Front-End (Lovable) → n8n Webhook → PDF Extraction → AI Content Detection → Plagiarism
+ Check → Document Stats → Gemini AI Evaluation → Merge Results → JSON Output
+ Response
+―
 Technology Stack
 Frontend
  • Lovable (AI web builder)
@@ -103,7 +110,7 @@ Infrastructure
  • Hostinger VPS
  • Domain with HTTPS
  • Self-hosted n8n instance
-
+―
 Input and Output Format
 Input:
  PDF document (assignments, essays, blog posts)
@@ -120,7 +127,7 @@ Output (JSON Structure Example):
  "ai_content_percentage": 96.51,
  "total_words": 215
  }
-
+―
 Cost Analysis (Operational Cost Only)
  Based on current API pricing and estimated usage.
 Estimated Cost Per Assignment:
@@ -137,7 +144,7 @@ Monthly Cost Estimates
  • 50,000 assignments: 665 to 815 USD
  • 100,000 assignments: 1,330 to 1,630 USD
 Actual pricing may vary once production data is available.
-
+―
 Future Roadmap
 Planned Enhancements:
  • Cloud history storage
@@ -148,12 +155,12 @@ Planned Enhancements:
  • PDF similarity index
  • Assignment rubric generator
  • AI-assisted rewrite suggestions
-
+―
 Demo Video
 Watch the full project walkthrough here:
 Revolutionizing Content Evaluation with Content Guard AI
 
-
+―
 
 Installation and Setup
 Prerequisites
@@ -164,18 +171,15 @@ Prerequisites
  – AI Content Detection API
  – Gemini AI
 1. Clone the Repository
-git clone : https://github.com/usabir75/ContentGuardAI
+git clone https://github.com/yourusername/ContentGuardAI.git
  cd ContentGuardAI
 2. Configure n8n Webhook URL
 https://n8n.srv1038989.hstgr.cloud/webhook/home_work_grader
-
-
-
+―
 Founder
 Engineer Usman Sabir
  Founder and Developer of ContentGuard AI
  Specialist in AI automation, workflow engineering, and full-stack development.
-
-
+―
 
 
