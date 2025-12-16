@@ -156,25 +156,7 @@ Frontend (Lovable)
 
 ---
 
-## 📥 Input and Output Format
 
-### Input
-- PDF documents (assignments, essays, blog posts)
-
-### Output (JSON Example)
-```json
-{
-  "score": 82,
-  "content_score": 25,
-  "structure_score": 18,
-  "grammar_score": 19,
-  "critical_thinking_score": 10,
-  "formatting_score": 9,
-  "plagiarism_status": "duplicate_content_found",
-  "plagiarism_percentage": 100,
-  "ai_content_percentage": 96.51,
-  "total_words": 215
-}
 
 
 ## 💰 Cost Analysis (Operational Cost Only)
