@@ -213,15 +213,6 @@ Planned enhancements:
   - AI Content Detection API
   - Gemini AI
 
-### Clone the Repository
-```bash
-git clone https://github.com/yourusername/ContentGuardAI.git
-cd ContentGuardAI
-
-### Configure n8n Webhook
-
-https://n8n.srv1038989.hstgr.cloud/webhook/home_work_grader
-
 
 ---
 
@@ -230,3 +221,13 @@ https://n8n.srv1038989.hstgr.cloud/webhook/home_work_grader
 **Usman Sabir**  
 Founder & Developer of ContentGuard AI  
 Specialist in AI automation, workflow engineering, and full-stack development
+
+
+## Clone the Repository
+```bash
+git clone https://github.com/yourusername/ContentGuardAI.git
+cd ContentGuardAI
+
+### Configure n8n Webhook
+
+https://n8n.srv1038989.hstgr.cloud/webhook/home_work_grader
